@@ -162,6 +162,7 @@
     $('#ed-mode').classList.toggle('cloud', Store.mode === 'cloud');
     $('#ed-note').textContent = $('#ed-mode').textContent; $('#ed-note').classList.toggle('cloud', Store.mode === 'cloud');
     $('#ed-view').href = 'index.html' + (Store.mode === 'cloud' ? '?u=' + encodeURIComponent(slug) : '');
+    N.markOwner(slug);
     buildForm(); N.render(P, $('#pv')); setDirty(false);
   }
 
