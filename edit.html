@@ -6,7 +6,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#f4f5fb">
 <meta name="description" content="Ahmed Abd El-Meneam · Flutter Developer &amp; Lawyer">
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
 <meta property="og:description" content="Flutter Developer · Lawyer">
 <title>Profile Editor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,14 +174,6 @@ button.cp.ok .cl{background:var(--green);color:#fff}
 @keyframes eq{from{height:2px}to{height:11px}}
 @keyframes rip{to{transform:scale(9);opacity:0}}
 
-.owner-fab{position:fixed;z-index:45;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:7px;
- padding:10px 15px;border-radius:999px;background:#141628;color:#fff;text-decoration:none;font:700 13px/1 var(--sans);box-shadow:0 12px 28px -10px rgba(20,22,40,.55);
- animation:up .6s cubic-bezier(.2,.9,.25,1.1) both;animation-delay:calc(var(--base,2.15s) + .9s);transition:transform .2s}
-.owner-fab:hover{transform:translateY(-2px)}
-.owner-fab svg{width:16px;height:16px}
-.foot .m,.me .av{transition:transform 1s cubic-bezier(.3,0,.2,1),filter 1s;cursor:default;-webkit-tap-highlight-color:transparent}
-.holding{transform:scale(.9);filter:drop-shadow(0 0 10px var(--violet))}
-.pv .owner-fab{display:none}
 .av .ini{width:100%;height:100%;border-radius:14px;display:grid;place-items:center;background:#fff;font-family:var(--disp);font-weight:700;font-size:22px;color:var(--violet)}
 /* Editor layout: sticky top bar; form column + sticky phone preview. Under 900px the two become tabs. Light-only like the public page. */
 [hidden]{display:none!important}
@@ -271,6 +263,8 @@ textarea.ed-in{resize:vertical;line-height:1.6}
 .ed-login-card h1{font-family:var(--e-disp);font-size:20px;margin:10px 0 0}
 .ed-login-card p{margin:0;color:var(--e-muted);font-size:14px}
 .ed-login-card .primary{margin-top:16px;padding:12px}
+.ed-lock-ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#f0ebff;color:var(--e-acc);margin-top:14px}
+.ed-lock-ic svg{width:26px;height:26px}
 .ed-err{color:var(--e-bad);font-size:13.5px;min-height:1.2em}
 
 @media (max-width:900px){
@@ -302,22 +296,20 @@ textarea.ed-in{resize:vertical;line-height:1.6}
   .ed-extra{grid-row:3;grid-column:1/-1;grid-template-columns:1fr}
   .ed-two{grid-template-columns:1fr}
 }
+.ed-login-card#lock-card,#ed-lock .ed-login-card{align-items:center;text-align:center}
+#ed-lock .ed-login-card .ed-logo{align-self:center}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
 </style>
 </head>
 <body class="ed">
-<div id="ed-login" class="ed-login" hidden>
-  <form id="ed-login-form" class="ed-card ed-login-card">
+<div id="ed-lock" class="ed-login" hidden>
+  <div class="ed-card ed-login-card">
     <div class="ed-logo">MENEAM</div>
-    <h1>ادخل عشان تعدّل صفحتك</h1>
-    <p>استخدم الإيميل والباسورد اللي جالك مع الكارت.</p>
-    <label for="l-email">الإيميل</label><input class="ed-in" id="l-email" type="email" dir="ltr" autocomplete="email" required>
-    <label for="l-pass">الباسورد</label><input class="ed-in" id="l-pass" type="password" dir="ltr" autocomplete="current-password" required>
-    <button class="ed-btn primary" type="submit">دخول</button>
-    <button class="ed-link" type="button" id="l-forgot">نسيت الباسورد؟</button>
-    <p class="ed-err" id="l-err" role="alert"></p>
-  </form>
+    <div class="ed-lock-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1>اللينك ده مش شغال</h1>
+    <p id="lock-msg">لينك التعديل غلط أو اتلغى. افتحه من الرسالة اللي جاتلك مع الكارت بالظبط، أو كلّم صاحب البراند يبعتلك لينك جديد.</p>
+  </div>
 </div>
 
 <div id="ed-app" hidden>
@@ -326,7 +318,6 @@ textarea.ed-in{resize:vertical;line-height:1.6}
     <span class="ed-mode" id="ed-mode"></span>
     <div class="ed-actions">
       <a class="ed-btn ghost" id="ed-view" href="index.html" target="_blank" rel="noopener">افتح الصفحة ↗</a>
-      <button class="ed-btn ghost" id="ed-logout" type="button" hidden>خروج</button>
       <button class="ed-btn primary ed-save" type="button">محفوظ ✓</button>
     </div>
   </header>

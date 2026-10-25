@@ -6,6 +6,8 @@
 window.NFC_CONFIG = {
   brand: "MENEAM",
   defaultSlug: "ahmed",
+  /* Demo mode only: the code that opens edit.html?k=CODE (cloud mode uses the "keys" collection instead) */
+  demoKey: "KKS7-SY2D-YDZ6",
   firebase: null
   /* firebase: {
     apiKey: "…", authDomain: "…", projectId: "…", appId: "…"

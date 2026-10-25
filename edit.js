@@ -157,12 +157,11 @@
   /* --------------------------------------------------------------- start */
   function startEditor(data) {
     P = data ? clone(data) : clone(N.DEFAULT);
-    $('#ed-app').hidden = false; $('#ed-login').hidden = true;
+    $('#ed-app').hidden = false; $('#ed-lock').hidden = true;
     $('#ed-mode').textContent = Store.mode === 'cloud' ? 'أونلاين · ' + slug : 'وضع تجريبي · بيتحفظ على الجهاز ده بس';
     $('#ed-mode').classList.toggle('cloud', Store.mode === 'cloud');
     $('#ed-note').textContent = $('#ed-mode').textContent; $('#ed-note').classList.toggle('cloud', Store.mode === 'cloud');
     $('#ed-view').href = 'index.html' + (Store.mode === 'cloud' ? '?u=' + encodeURIComponent(slug) : '');
-    N.markOwner(slug);
     buildForm(); N.render(P, $('#pv')); setDirty(false);
   }
 
@@ -180,34 +179,29 @@
     });
     window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
+    var code = readCode();
+    if (!code) { locked('افتح صفحة التعديل من اللينك الخاص بيك. اللينك فيه كود في آخره.'); return; }
     Store.init().then(function () {
       if (Store.mode !== 'cloud') {
         if (Store.error) toast('مقدرتش أوصل للسيرفر، اشتغلت تجريبي', true);
+        if (norm(code) !== norm(N.CFG.demoKey)) { locked(); return; }
         Store.get(slug).then(startEditor);
         return;
       }
-      Store.onUser(function (u) {
-        if (!u) { $('#ed-app').hidden = true; $('#ed-login').hidden = false; return; }
-        Store.mySlug().then(function (s) {
-          if (!s) { toast('الحساب ده ملوش صفحة. كلّم صاحب البراند', true); Store.logout(); return; }
-          slug = s; return Store.get(s).then(startEditor);
-        });
-      });
-      $('#ed-login-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var em = $('#l-email').value.trim(), pw = $('#l-pass').value, err = $('#l-err');
-        err.textContent = '';
-        Store.login(em, pw).catch(function (x) {
-          err.textContent = /password|credential|user-not-found/i.test(x.code || '') ? 'الإيميل أو الباسورد غلط' : 'محصلش دخول، جرّب تاني';
-        });
-      });
-      $('#l-forgot').addEventListener('click', function () {
-        var em = $('#l-email').value.trim(); if (!em) { $('#l-err').textContent = 'اكتب إيميلك الأول'; return; }
-        Store.reset(em).then(function () { $('#l-err').textContent = 'بعتنالك لينك تغيير الباسورد على الإيميل'; }, function () { $('#l-err').textContent = 'مقدرناش نبعت، اتأكد من الإيميل'; });
-      });
-      $('#ed-logout').hidden = false;
-      $('#ed-logout').addEventListener('click', function () { Store.logout(); });
+      Store.claim(code).then(function (s) { slug = s; return Store.get(s).then(startEditor); })
+        .catch(function () { locked(); });
     });
+  }
+  function norm(c) { return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+  function readCode() {
+    var q = new URLSearchParams(location.search).get('k');
+    var h = location.hash.replace(/^#/, '');
+    var c = (q || h || '').trim();
+    return /^[A-Za-z0-9-]{8,40}$/.test(c) ? c.toUpperCase() : '';
+  }
+  function locked(msg) {
+    $('#ed-app').hidden = true; $('#ed-lock').hidden = false;
+    if (msg) $('#lock-msg').textContent = msg;
   }
   boot();
 })();
