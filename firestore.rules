@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // One document per card: profiles/{slug}  (slug = the ?u= part of the card link)
+    match /profiles/{slug} {
+      // Anyone who taps the card can read the profile
+      allow read: if true;
+      // Only the owner can edit, and they can't hand the profile to someone else
+      allow update: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.ownerUid == resource.data.ownerUid
+                    && request.resource.size() < 1000000;
+      // You (the seller) create and delete profiles from the Firebase console
+      allow create, delete: if false;
+    }
+  }
+}
